@@ -1,6 +1,8 @@
-<script setup>
+<script setup lang="ts">
 import {
   ElForm,
+  ElFormItem,
+  ElOption,
   ElCascader,
   ElInput,
   ElCheckboxGroup,
@@ -21,6 +23,29 @@ const props = defineProps({
   config: {
     type: Array,
     default: () => []
+  },
+  labelPosition: {
+    type: String as any,
+    default: 'right'
+  },
+  labelWidth: {
+    type: String as any,
+    default: 'auto'
+  }
+});
+defineOptions({
+  name: 'DynamicForm',
+  components: {
+    ElForm,
+    ElFormItem,
+    ElOption,
+    ElCascader,
+    ElInput,
+    ElCheckboxGroup,
+    ElCheckbox,
+    ElRadio,
+    ElRadioGroup,
+    ElSelect
   }
 });
 </script>
@@ -30,51 +55,55 @@ const props = defineProps({
     ref="form"
     :class="['sy-dynamic-form', props.class]"
     :model="props.formData"
+    :label-position="props.labelPosition"
+    :label-width="props.labelWidth"
     v-bind="$attrs"
-    v-on="$listeners"
   >
-    <el-form-item v-for="(item, index) in props.config" :key="item.id + index" :prop="item.prop" v-bind="item.attrs">
+    <el-form-item
+      v-for="(item, index) in props.config"
+      :key="(item as any).id + index"
+      :prop="(item as any).field"
+      :label="(item as any).label"
+      v-bind="(item as any).attrs"
+    >
       <!-- 具名插槽 -->
-      <slot v-if="item.slot" :name="item.slot" :data="item" :row="props.formData"></slot>
+      <slot v-if="(item as any).slot" :name="(item as any).slot" :data="item" :row="props.formData"></slot>
       <el-cascader
-        v-else-if="item.componentName === 'el-cascader'"
+        v-else-if="(item as any).componentName === 'ElCascader'"
         :key="Date.now()"
-        :is="item.componentName"
-        :options="item.options"
+        :options="(item as any).options"
         popper-class="sy-cascader"
-        v-model="props.formData[item.id]"
-        v-on="item.events"
-        v-bind="item.componentProps"
+        v-model="props.formData[(item as any).id]"
+        v-bind="(item as any).componentProps"
       >
       </el-cascader>
       <component
         v-else
-        :is="item.componentName"
-        :options="item.options"
-        v-model="props.formData[item.id]"
-        v-on="item.events"
-        v-bind="item.componentProps"
+        :is="(item as any).componentName"
+        :options="(item as any).options"
+        v-model="props.formData[(item as any).id]"
+        v-bind="(item as any).componentProps"
         @input="
-          item.type === 'input' &&
-            (props.formData[item.id] = props.formData[item.id].replace(/[^\w\u4E00-\u9FA5_]/g, ''))
+          (item as any).type === 'input' &&
+            (props.formData[(item as any).id] = props.formData[(item as any).id].replace(/[^\w\u4E00-\u9FA5_]/g, ''))
         "
       >
-        <template v-if="item.componentName === 'el-select'">
+        <template v-if="(item as any).componentName === 'ElSelect'">
           <el-option
-            v-for="(option, idx) in item.options"
-            :label="option.label || option[item.keyValue.label]"
-            :value="option.value || option[item.keyValue.value]"
+            v-for="(option, idx) in (item as any).options"
+            :label="option.label || option[(item as any).keyValue.label]"
+            :value="option.value || option[(item as any).keyValue.value]"
             :key="idx"
           >
           </el-option>
         </template>
-        <template v-if="item.componentName === 'el-checkbox-group'">
-          <el-checkbox v-for="option in item.options" :label="option.label" :key="option.label">
+        <template v-if="(item as any).componentName === 'ElCheckboxGroup'">
+          <el-checkbox v-for="option in (item as any).options" :label="option.label" :key="option.label">
             {{ option.text || option.label }}
           </el-checkbox>
         </template>
-        <template v-if="item.componentName === 'el-radio-group'">
-          <el-radio v-for="option in item.options" :label="option.label" :key="option.label">
+        <template v-if="(item as any).componentName === 'ElCheckboxGroup'">
+          <el-radio v-for="option in (item as any).options" :label="option.label" :key="option.label">
             {{ option.text || option.label }}
           </el-radio>
         </template>

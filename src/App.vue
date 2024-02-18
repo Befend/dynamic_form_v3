@@ -4,31 +4,34 @@ import DynamicForm from './components/DynamicForm.vue';
 const formData = {
   name: '张三',
   age: 18,
-  sex: '男',
-  hobby: ['打篮球', '打游戏'],
-  address: {
-    province: '浙江省',
-    city: '杭州市',
-    district: '西湖区'
-  }
+  sex: '男'
 };
 const formConfig = [
   {
-    type: 'input',
+    id: '1',
     label: '姓名',
     field: 'name',
-    required: true,
-    placeholder: '请输入姓名'
+    componentName: 'ElInput',
+    componentProps: {
+      required: true,
+      placeholder: '请输入姓名'
+    }
   },
   {
-    type: 'input',
+    id: '2',
     label: '年龄',
     field: 'age',
-    required: true,
-    placeholder: '请输入年龄'
+    componentName: 'ElInput',
+    componentProps: {
+      required: true,
+      placeholder: '请输入年龄'
+    }
   },
   {
-    type: 'radio',
+    id: '3',
+    componentName: 'ElRadio',
+    field: 'sex',
+    required: true,
     label: '性别'
   }
 ];
